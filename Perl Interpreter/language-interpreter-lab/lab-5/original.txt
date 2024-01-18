@@ -1,0 +1,223 @@
+%{
+
+#define YYDEBUG 1
+#include <stdio.h>
+void yyerror(const char* msg) {
+  fprintf(stderr, "%s\n", msg);
+}
+int yylex();
+%}
+
+%debug
+
+
+%token TOKEN_INT
+%token TOKEN_WHILE
+%token TOKEN_ADD
+%token TOKEN_SUB
+%token TOKEN_MULT
+%token TOKEN_POW
+%token TOKEN_GREATER_THAN
+%token TOKEN_DO
+%token TOKEN_FOR
+%token TOKEN_IF
+%token TOKEN_IDENT
+%token TOKEN_NUMBER
+%token TOKEN_ERROR
+%token TOKEN_UNDER
+%token TOKEN_QUESTION
+%token TOKEN_PRINT 
+%token TOKEN_USE
+%token TOKEN_PERIOD
+%token TOKEN_DIV
+%token TOKEN_LESS_THAN
+%token TOKEN_VAR
+%token TOKEN_EQUAL
+%token TOKEN_COMMA
+%token TOKEN_CLOSE_PARENTHESIS
+%token TOKEN_OPEN_PARENTHESIS
+%token TOKEN_CLOSE_SQUIGGLE
+%token TOKEN_OPEN_SQUIGGLE
+%token TOKEN_SEMI
+%token TOKEN_EXCLAIM
+%token TOKEN_POUND
+%token TOKEN_ARRAY
+%token TOKEN_OPEN_SQUARE
+%token TOKEN_CLOSE_SQUARE
+%token TOKEN_QUOTE
+%token TOKEN_BACK
+%token TOKEN_COLON
+%token TOKEN_CARROT
+%token TOKEN_STRING
+%token TOKEN_FUNCTION
+%token TOKEN_MY
+
+%%
+
+program:
+    statements
+    ;
+
+statements:
+    statement TOKEN_SEMI
+    | statements statement TOKEN_SEMI
+    ;
+
+statement:
+    use_statement
+    | print_statement
+    | assignment
+    | expr
+    | math
+    ;
+
+expr: expr TOKEN_COMMA type
+    | type math type
+    | type
+    ;   
+
+type: TOKEN_ARRAY
+    | TOKEN_VAR
+    | TOKEN_NUMBER
+    | TOKEN_STRING
+    | array
+    ;
+
+array: TOKEN_OPEN_PARENTHESIS expr TOKEN_CLOSE_PARENTHESIS
+
+use_statement:
+    TOKEN_USE TOKEN_IDENT 
+    ;
+
+print_statement:
+    TOKEN_PRINT TOKEN_OPEN_PARENTHESIS TOKEN_STRING TOKEN_CLOSE_PARENTHESIS 
+    ;
+
+assignment: TOKEN_MY expr TOKEN_EQUAL expr
+    ;
+
+index_array:
+    TOKEN_OPEN_SQUARE expr TOKEN_CLOSE_SQUARE | TOKEN_OPEN_SQUARE IDENT TOKEN_CLOSE_SQUARE
+    ;
+
+math:
+    TOKEN_ADD | TOKEN_DIV | TOKEN_EQUAL | TOKEN_GREATER_THAN | TOKEN_POW | TOKEN_MULT | TOKEN_SUB | TOKEN_LESS_THAN | TOKEN_NUMBER
+    ;
+
+parameter_list:
+    /* Empty */
+    | IDENT
+    | parameter_list TOKEN_COMMA IDENT
+    ;
+
+IDENT:
+    TOKEN_IDENT
+    | TOKEN_IDENT TOKEN_VAR | TOKEN_IDENT TOKEN_ARRAY
+    ;
+
+%%
+
+do_while_loop:
+    TOKEN_DO TOKEN_OPEN_SQUIGGLE TOKEN_CLOSE_SQUIGGLE TOKEN_WHILE TOKEN_OPEN_PARENTHESIS type TOKEN_CLOSE_PARENTHESIS
+    ;
+
+for_loop:
+
+    ;
+
+if_statement:
+
+    ;
+
+
+term: term TOKEN_MULT factor
+    | term TOKEN_DIV factor
+    | factor
+    ;
+
+factor: TOKEN_PLUS factor
+    | TOKEN_SUB factor
+    | power | type
+    ;
+power: factor TOKEN_POW factor
+
+
+compound_stmt: if_stmt
+            | for_stmt
+            | while_stmt
+                  ;
+if_stmt: TOKEN_IF_KEYWORD named_expression TOKEN_COLON block elif_stmt
+                  | TOKEN_IF_KEYWORD named_expression TOKEN_COLON block else_block
+                  | TOKEN_IF_KEYWORD named_expression TOKEN_COLON block
+for_stmt: 
+    TOKEN_FOR_KEYWORD TOKEN_IDENTIFIER TOKEN_IN_KEYWORD expression TOKEN_COLON block;
+
+
+
+
+program:
+    statements
+    ;
+
+statements:
+    statement TOKEN_SEMI
+    | statements statement TOKEN_SEMI
+    ;
+
+statement:
+    use_statement
+    | print_statement
+    | assignment
+    | do_while_loop
+    | for_loop
+    | if_statement
+    ;
+
+expr: type TOKEN_MULT factor
+    | type TOKEN_DIV factor
+    | factor
+    ;  
+
+type: TOKEN_IDENT_ARRAY
+    | TOKEN_VAR
+    | TOKEN_NUMBER
+    | TOKEN_STRING
+    ;
+
+use_statement:
+    TOKEN_USE TOKEN_IDENT 
+    ;
+
+print_statement:
+    TOKEN_PRINT TOKEN_OPEN_PARENTHESIS TOKEN_STRING TOKEN_CLOSE_PARENTHESIS 
+    ;
+
+assignment: TOKEN_MY type TOKEN_EQUAL expr
+    ;
+
+factor: type TOKEN_ADD expr
+    | TOKEN_SUB expr
+    | power | type
+    ;
+
+power: type TOKEN_POW expr
+
+
+
+
+input: expr 
+    ;
+
+expr: expr TOKEN_ADD term
+    | expr TOKEN_SUB term
+    | term
+    ;
+
+term: term TOKEN_MULT factor
+    | term TOKEN_DIV factor
+    | factor
+    ;
+
+factor: NUMBER
+    | TOKEN_OPEN_PARENTHESIS expr TOKEN_CLOSE_PARENTHESIS
+    ;

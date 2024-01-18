@@ -1,0 +1,110 @@
+%{
+
+#define YYDEBUG 1
+#include <stdio.h>
+extern int yylineno;
+void yyerror(const char* msg) {
+  fprintf(stderr, "Error | Line: %d\n%s\n", yylineno, msg);
+}
+int yylex();
+%}
+
+%debug
+%define parse.error detailed
+
+%token TOKEN_INT
+%token TOKEN_WHILE
+%token TOKEN_ADD
+%token TOKEN_SUB
+%token TOKEN_MULT
+%token TOKEN_POW
+%token TOKEN_GREATER_THAN
+%token TOKEN_DO
+%token TOKEN_FOR
+%token TOKEN_IF
+%token TOKEN_IDENT
+%token TOKEN_NUMBER
+%token TOKEN_ERROR
+%token TOKEN_UNDER
+%token TOKEN_QUESTION
+%token TOKEN_PRINT 
+%token TOKEN_USE
+%token TOKEN_PERIOD
+%token TOKEN_DIV
+%token TOKEN_LESS_THAN
+%token TOKEN_VAR
+%token TOKEN_EQUAL
+%token TOKEN_COMMA
+%token TOKEN_CLOSE_PARENTHESIS
+%token TOKEN_OPEN_PARENTHESIS
+%token TOKEN_CLOSE_SQUIGGLE
+%token TOKEN_OPEN_SQUIGGLE
+%token TOKEN_SEMI
+%token TOKEN_EXCLAIM
+%token TOKEN_POUND
+%token TOKEN_IDENT_ARRAY
+%token TOKEN_OPEN_SQUARE
+%token TOKEN_CLOSE_SQUARE
+%token TOKEN_QUOTE
+%token TOKEN_BACK
+%token TOKEN_COLON
+%token TOKEN_CARROT
+%token TOKEN_STRING
+%token TOKEN_FUNCTION
+%token TOKEN_MY
+
+%%
+
+program:
+    statements
+    ;
+
+statements:
+    statement TOKEN_SEMI
+    | statements statement TOKEN_SEMI
+    ;
+
+statement:
+    use_statement
+    | print_statement
+    | assignment
+    | do_while_loop
+    | for_loop
+    | if_statement
+    ;
+
+do_while_loop:
+    TOKEN_DO TOKEN_OPEN_SQUIGGLE TOKEN_CLOSE_SQUIGGLE TOKEN_WHILE TOKEN_OPEN_PARENTHESIS TOKEN_VAR TOKEN_CLOSE_PARENTHESIS
+    ;
+
+expr: type TOKEN_MULT factor
+    | type TOKEN_DIV factor
+    | factor
+    ;  
+
+type: TOKEN_IDENT_ARRAY
+    | TOKEN_VAR
+    | TOKEN_NUMBER
+    | TOKEN_STRING
+    ;
+
+use_statement:
+    TOKEN_USE TOKEN_IDENT 
+    ;
+
+print_statement:
+    TOKEN_PRINT TOKEN_OPEN_PARENTHESIS TOKEN_STRING TOKEN_CLOSE_PARENTHESIS 
+    ;
+
+assignment: TOKEN_MY type TOKEN_EQUAL expr
+    ;
+
+factor: type TOKEN_ADD expr
+    | TOKEN_SUB expr
+    | power | type
+    ;
+
+power: type TOKEN_POW expr
+
+%%
+
